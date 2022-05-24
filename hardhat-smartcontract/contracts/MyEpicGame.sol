@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.4;
 
 // NFT contract to inherit from.
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -93,6 +93,12 @@ contract MyEpicGame is ERC721 {
        console.log("Minted NFT w/ tokenId %s and characterIndex %s", newItemId, _characterIndex);
     
 
+       
+    // Keep an easy way to see who owns what NFT.
+    nftHolders[msg.sender] = newItemId;
+
+    // Increment the tokenId for the next person that uses it.
+    _tokenIds.increment();
     }
 
 
@@ -123,4 +129,6 @@ contract MyEpicGame is ERC721 {
 
       return output;
     }
+
+
 }

@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 import "hardhat/console.sol";
+import "./libraries/Base64.sol";
 
 contract MyEpicGame is ERC721 {
 
@@ -24,9 +25,8 @@ contract MyEpicGame is ERC721 {
 
    // The tokenId is the NFTs unique identifier, it's just a number that goes
   // 0, 1, 2, 3, etc.
-
-  using Counters for Counters.counter;
-  Counters.counter private _tokenIds;
+   using Counters for Counters.Counter;
+   Counters.Counter private _tokenIds;
   
    // A lil array to help us hold the default data for our characters.
   // This will be helpful when we mint new characters and need to know
@@ -34,14 +34,21 @@ contract MyEpicGame is ERC721 {
 
   CharacterAttributes[] defaultCharacters;
 
+  // We create a mapping from the nft's tokenId => that NFTs attributes.
+  mapping(uint256 => CharacterAttributes) public nftHolderAttributes;
+
+  // A mapping from an address => the NFTs tokenId. Gives me an ez way
+  // to store the owner of the NFT and reference it later.
+  mapping(address => uint256) public nftHolders;
+
 
     constructor(
     string[] memory characterNames,
     string[] memory characterImageURIs,
     uint[] memory characterHp,
     uint[] memory characterAttackDmg
-  ) {
-for(uint i = 0; i < characterNames.length; i += 1) {
+  ) ERC721("Heroes", "HERO"){
+   for(uint i = 0; i < characterNames.length; i += 1) {
       defaultCharacters.push(CharacterAttributes({
         characterIndex: i,
         name: characterNames[i],
@@ -55,5 +62,65 @@ for(uint i = 0; i < characterNames.length; i += 1) {
       console.log("Done initializing %s w/ HP %s, img %s", c.name, c.hp, c.imageURI);
     }
 
+    // I increment _tokenIds here so that my first NFT has an ID of 1.
+    // More on this in the lesson!
+    _tokenIds.increment();
+
+    }
+
+    // user able to get nft based on the character they sent in
+
+    function mintCharacterNFT(uint _characterIndex) external {
+
+      //get current token id
+
+      uint256 newItemId = _tokenIds.current() ;
+
+     //function! Assigns the tokenId to the caller's wallet address
+      _safeMint(msg.sender,newItemId) ;
+
+      // we map things in nftholderattributes
+
+      nftHolderAttributes[newItemId] = CharacterAttributes({
+        characterIndex : _characterIndex,
+         name: defaultCharacters[_characterIndex].name,
+      imageURI: defaultCharacters[_characterIndex].imageURI,
+      hp: defaultCharacters[_characterIndex].hp,
+      maxHp: defaultCharacters[_characterIndex].maxHp,
+      attackDamage: defaultCharacters[_characterIndex].attackDamage
+      });
+
+       console.log("Minted NFT w/ tokenId %s and characterIndex %s", newItemId, _characterIndex);
+    
+
+    }
+
+
+    function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+      CharacterAttributes memory charAttributes = nftHolderAttributes[_tokenId];
+
+      string memory strHp = Strings.toString(charAttributes.hp);
+      string memory strMaxHp = Strings.toString(charAttributes.maxHp);
+      string memory strAttackDamage = Strings.toString(charAttributes.attackDamage);
+
+      string memory json = Base64.encode(
+        abi.encodePacked(
+         
+          '{"name": "',
+      charAttributes.name,
+      ' -- NFT #: ',
+      Strings.toString(_tokenId),
+      '", "description": "This is an NFT that lets people play in the game Metaverse Slayer!", "image": "',
+      charAttributes.imageURI,
+      '", "attributes": [ { "trait_type": "Health Points", "value": ',strHp,', "max_value":',strMaxHp,'}, { "trait_type": "Attack Damage", "value": ',
+      strAttackDamage,'} ]}'
+        )
+      );
+
+      string memory output =string(
+        abi.encodePacked("data : application/json:base64,",json)
+      );
+
+      return output;
     }
 }

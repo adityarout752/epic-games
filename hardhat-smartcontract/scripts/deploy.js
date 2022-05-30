@@ -2,10 +2,10 @@ const main = async () => {
     const gameContractFactory = await hre.ethers.getContractFactory('MyEpicGame');
     const gameContract = await gameContractFactory.deploy(                     
       ["Leo", "Aang", "Pikachu"],       
-      ["https://i.imgur.com/pKd5Sdk.png", 
+      ["https://i.imgur.com/aZkuP0D.gif", 
       "https://i.imgur.com/xVu4vFL.png", 
       "https://i.imgur.com/u7T87A6.png"],
-      [100, 200, 300],                    
+      [300, 200, 300],                    
       [100, 50, 25]                       
     );
     await gameContract.deployed();
@@ -16,6 +16,7 @@ const main = async () => {
     txn = await gameContract.mintCharacterNFT(0);
     await txn.wait();
     console.log("Minted NFT #1");
+    
   
     txn = await gameContract.mintCharacterNFT(1);
     await txn.wait();

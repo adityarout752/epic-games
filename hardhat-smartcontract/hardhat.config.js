@@ -18,7 +18,7 @@ dotenv.config();
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-// 0x86248D4278bb8055Ca9E9639396E71E3Ef9ef48B
+//0xaA88AaC462A112A0823f29DD3E22bD12CE0B75e3
 module.exports = {
   solidity: "0.8.4",
   networks: {

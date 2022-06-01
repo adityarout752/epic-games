@@ -30,7 +30,7 @@ contract MyEpicGame is ERC721 {
      string imageURI;
      uint hp;
      uint maxHp;
-     uint attackdamage;
+     uint attackDamage;
    }
 
    // The tokenId is the NFTs unique identifier, it's just a number that goes
@@ -43,7 +43,7 @@ contract MyEpicGame is ERC721 {
   // things like their HP, AD, etc
 
   CharacterAttributes[] defaultCharacters;
-  Bigboss public bigboss;
+  BigBoss public bigBoss;
   // We create a mapping from the nft's tokenId => that NFTs attributes.
   mapping(uint256 => CharacterAttributes) public nftHolderAttributes;
 
@@ -61,11 +61,11 @@ contract MyEpicGame is ERC721 {
   string memory bossImageURI,
   uint bossHp,
   uint bossAttackDamage
-  ) ERC721("Heroes", "HERO"){
+  ) ERC721("Spartans", "spar"){
 
     //initialize big  boss
 
-    bigboss = BigBoss({
+    bigBoss = BigBoss({
       name:bossName,
       imageURI : bossImageURI,
       hp : bossHp,
@@ -180,10 +180,10 @@ CharacterAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
   );
 
 //player attacks boss
-  if(bigboss.hp < player.attackDamage) {
-    bigboss.hp = 0;
+  if(bigBoss.hp < player.attackDamage) {
+    bigBoss.hp = 0;
   } else {
-    bigboss.hp = bigBoss.hp - player.attackDamage;
+    bigBoss.hp = bigBoss.hp - player.attackDamage;
   }
 
   //boss attacks player
@@ -197,6 +197,19 @@ CharacterAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
  console.log("Player attacked boss. New boss hp: %s", bigBoss.hp);
   console.log("Boss attacked player. New player hp: %s\n", player.hp);
 }
+
+function checkIfUserHasNFT() public view returns (CharacterAttributes memory) {
+ 
+ uint256 userNftTokenId = nftHolders[msg.sender];
+
+ if(userNftTokenId > 0) {
+   return nftHolderAttributes[userNftTokenId];
+ } else {
+    CharacterAttributes memory emptyStruct;
+    return emptyStruct;
+ }
+}
+
 
 
 }

@@ -51,6 +51,9 @@ contract MyEpicGame is ERC721 {
   // to store the owner of the NFT and reference it later.
   mapping(address => uint256) public nftHolders;
 
+  event CharacterNFTMinted(address sender, uint256 tokenId, uint256 characterIndex);
+event AttackComplete(address sender, uint newBossHp, uint newPlayerHp);
+
 
     constructor(
     string[] memory characterNames,
@@ -128,6 +131,7 @@ contract MyEpicGame is ERC721 {
 
     // Increment the tokenId for the next person that uses it.
     _tokenIds.increment();
+    emit CharacterNFTMinted(msg.sender, newItemId, _characterIndex);
     }
 
 
@@ -196,6 +200,7 @@ CharacterAttributes storage player = nftHolderAttributes[nftTokenIdOfPlayer];
 
  console.log("Player attacked boss. New boss hp: %s", bigBoss.hp);
   console.log("Boss attacked player. New player hp: %s\n", player.hp);
+  emit AttackComplete(msg.sender, bigBoss.hp, player.hp);
 }
 
 function checkIfUserHasNFT() public view returns (CharacterAttributes memory) {
@@ -209,6 +214,11 @@ function checkIfUserHasNFT() public view returns (CharacterAttributes memory) {
     return emptyStruct;
  }
 }
+
+function getAllDefaultCharacters() public view returns (CharacterAttributes[] memory) {
+  return defaultCharacters;
+}
+
 
 
 

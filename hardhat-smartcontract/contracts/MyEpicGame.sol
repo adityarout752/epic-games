@@ -52,7 +52,7 @@ contract MyEpicGame is ERC721 {
   mapping(address => uint256) public nftHolders;
 
   event CharacterNFTMinted(address sender, uint256 tokenId, uint256 characterIndex);
-event AttackComplete(address sender, uint newBossHp, uint newPlayerHp);
+  event AttackComplete(address sender, uint newBossHp, uint newPlayerHp);
 
 
     constructor(
@@ -75,11 +75,11 @@ event AttackComplete(address sender, uint newBossHp, uint newPlayerHp);
       maxHp : bossHp,
       attackDamage : bossAttackDamage
 
-    });
+     });
 
     console.log("Done initializing boss %s w/ HP %s, img %s", bigBoss.name, bigBoss.hp, bigBoss.imageURI);
 
-   for(uint i = 0; i < characterNames.length; i += 1) {
+    for(uint i = 0; i < characterNames.length; i += 1) {
       defaultCharacters.push(CharacterAttributes({
         characterIndex: i,
         name: characterNames[i],
